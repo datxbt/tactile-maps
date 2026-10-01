@@ -1,122 +1,122 @@
-# Tactile maps (capstone)
+# Bản đồ xúc giác (capstone)
 
-Upload a floor plan image and get a 3D-printable **tactile map**: raised walls, standard symbols and braille that a blind or low-vision person can read with their fingers before visiting a building.
+Tải lên ảnh mặt bằng tòa nhà và nhận về một **bản đồ xúc giác** có thể in 3D: tường nổi, ký hiệu theo chuẩn và chữ nổi braille để người khiếm thị hoặc thị lực kém có thể đọc bằng ngón tay trước khi đến tòa nhà.
 
-This is a simplified version of the `bumps` hackathon project. It keeps the same flow (upload, AI agents, editing, 3D view, STL export) with far less code.
+Đây là phiên bản rút gọn của dự án hackathon `bumps`. Nó giữ nguyên quy trình (tải lên, agent AI, chỉnh sửa, xem 3D, xuất STL) nhưng ít mã hơn rất nhiều.
 
-## Run it
+## Chạy dự án
 
-Requires [Bun](https://bun.sh) 1.3+.
+Cần [Bun](https://bun.sh) 1.3 trở lên.
 
 ```bash
-bun run setup   # installs everything and creates the .env files
-bun run dev     # starts the webpage and the backend
+bun run setup   # cài đặt mọi thứ và tạo các file .env
+bun run dev     # khởi động trang web và backend
 ```
 
-Open http://localhost:3000 and click **Bắt đầu tạo bản đồ** (or go to http://localhost:3000/maps). Click **Dùng thử văn phòng mẫu** to see the whole flow without an AI key.
+Mở http://localhost:3000 và bấm **Bắt đầu tạo bản đồ** (hoặc vào http://localhost:3000/maps). Bấm **Dùng thử văn phòng mẫu** để xem toàn bộ quy trình mà không cần khóa AI.
 
-To read your own floor plans, add an AI key to `apps/api/.env` and restart `bun run dev`:
+Để đọc mặt bằng của riêng bạn, thêm khóa AI vào `apps/api/.env` rồi khởi động lại `bun run dev`:
 
-- **Gemini (default):** create a key at https://aistudio.google.com and set `GEMINI_API_KEY=...`
-- **or OpenRouter:** set `MODEL_PROVIDER=openrouter` and `OPENROUTER_API_KEY=...`
+- **Gemini (mặc định):** tạo khóa tại https://aistudio.google.com và đặt `GEMINI_API_KEY=...`
+- **hoặc OpenRouter:** đặt `MODEL_PROVIDER=openrouter` và `OPENROUTER_API_KEY=...`
 
-With OpenRouter, the upload form has an **AI model** dropdown with a rough price per run. The allowed models live in `apps/api/src/agents/models.ts`; the backend rejects anything else, so nobody can pick an expensive model by editing the page. `MODEL=` in `.env` sets which one is preselected. AI edits reuse the model the plan was read with.
+Khi dùng OpenRouter, form tải lên có thêm danh sách **Mô hình AI** kèm giá ước tính cho mỗi lần chạy. Các mô hình được phép nằm trong `apps/api/src/agents/models.ts`; backend từ chối mọi mô hình khác, nên không ai có thể chọn một mô hình đắt tiền bằng cách sửa trang web. Biến `MODEL=` trong `.env` quy định mô hình được chọn sẵn. Các lần sửa bằng AI dùng lại mô hình đã đọc mặt bằng đó.
 
-The backend reads `.env` only when it starts, so **restart `bun run dev` after every `.env` change**. To check which model the running backend uses, open http://localhost:3003/.
+Backend chỉ đọc `.env` khi khởi động, nên **hãy khởi động lại `bun run dev` sau mỗi lần sửa `.env`**. Để xem backend đang chạy dùng mô hình nào, mở http://localhost:3003/.
 
-## How it works
+## Cách hoạt động
 
 ```
- image ──► 1. PARSER AGENT ──► FloorModel (JSON) ──► 2. YOU EDIT ──► 3. CONVERT ──► STL file ──► 3D printer
-            (AI, one call)      walls, doors,          (+ edit agent)    (plain code,
-                                rooms, symbols                           no AI)
+ ảnh ──► 1. AGENT ĐỌC ──► FloorModel (JSON) ──► 2. BẠN SỬA ──► 3. CHUYỂN ĐỔI ──► file STL ──► máy in 3D
+         (AI, một lần gọi)  tường, cửa,           (+ agent sửa)   (mã thuần,
+                            phòng, ký hiệu                         không dùng AI)
 ```
 
-1. **Upload.** The webpage sends the image to the backend, which saves it and starts the **parser agent** in the background. The page checks back every 2 seconds until it's done.
-2. **Parser agent.** One call to a multimodal AI model with a detailed prompt. The model returns JSON listing the walls, doors, rooms and symbols it sees, each with a *confidence* score. The backend cleans that JSON up into a **FloorModel**.
-3. **Review and edit.** The editor draws the FloorModel over your image. Anything with confidence below 70% is shown in amber, meaning *check this*. You can drag points, add walls, doors and symbols, rename rooms, and delete mistakes. You can also type an instruction for the **edit agent** (for example *"add a door between the lobby and the corridor"*).
-4. **Convert.** Plain code with no AI turns the FloorModel into a 200 × 200 mm plate using fixed tactile standards: walls +1.0 mm, symbols +1.5 mm, braille dots +0.7 mm, doors as gaps of at least 5 mm, and a short braille key in each room. It also lists warnings when a rule is broken.
-5. **3D preview and export.** The page shows the exact STL file in 3D. You download two files: the **map** plate and a **legend** plate that spells out each braille key.
+1. **Tải lên.** Trang web gửi ảnh đến backend. Backend lưu ảnh và chạy **agent đọc** ở chế độ nền. Trang web cứ 2 giây hỏi lại một lần cho đến khi xong.
+2. **Agent đọc.** Một lần gọi đến mô hình AI đa phương thức với một prompt chi tiết. Mô hình trả về JSON liệt kê các bức tường, cửa, phòng và ký hiệu mà nó thấy, mỗi thứ kèm một *độ tin cậy*. Backend làm sạch JSON đó thành một **FloorModel**.
+3. **Kiểm tra và chỉnh sửa.** Trình chỉnh sửa vẽ FloorModel đè lên ảnh của bạn. Những phần có độ tin cậy dưới 70% được tô màu hổ phách, nghĩa là *cần kiểm tra*. Bạn có thể kéo các điểm, thêm tường, cửa và ký hiệu, đổi tên phòng và xóa chỗ sai. Bạn cũng có thể gõ một lệnh cho **agent sửa** (ví dụ *"thêm một cửa giữa sảnh và hành lang"*).
+4. **Chuyển đổi.** Mã thuần, không dùng AI, biến FloorModel thành một tấm 200 × 200 mm theo các chuẩn xúc giác cố định: tường cao +1,0 mm, ký hiệu +1,5 mm, chấm braille +0,7 mm, cửa là khoảng hở rộng ít nhất 5 mm, và mỗi phòng có một mã braille ngắn. Bước này cũng liệt kê cảnh báo khi một quy tắc bị vi phạm.
+5. **Xem 3D và xuất file.** Trang web hiển thị chính file STL đó ở dạng 3D. Bạn tải về hai file: tấm **bản đồ** và tấm **chú giải** giải thích từng mã braille.
 
-The key design idea: **the AI only reads the drawing; the rules that make the map readable are fixed code.** A model can't silently produce an unreadable map, and every part can be tested on its own.
+Ý tưởng thiết kế chính: **AI chỉ đọc bản vẽ; các quy tắc giúp bản đồ đọc được là mã cố định.** Mô hình không thể âm thầm tạo ra một bản đồ không đọc được, và mỗi phần đều có thể kiểm thử riêng.
 
-## Where things are
+## Các thành phần nằm ở đâu
 
 ```
 packages/shared/src/
-  floor-model.ts        the FloorModel: the one data format everything shares
-  project.ts            Project type (a saved upload) and the tactile summary
+  floor-model.ts        FloorModel: định dạng dữ liệu duy nhất mà mọi phần dùng chung
+  project.ts            kiểu Project (một lần tải lên đã lưu) và phần tóm tắt xúc giác
 
-apps/api/src/                     BACKEND (Bun + Hono, port 3003)
-  index.ts                        starts the server
-  routes/projects.ts              every API endpoint (table below)
-  agents/llm.ts                   calls Gemini or OpenRouter
-  agents/models.ts                the models the upload dropdown may offer, with prices
-  agents/parser.ts                parser agent: image -> FloorModel (the prompt is here)
-  agents/editor.ts                edit agent: instruction + FloorModel -> FloorModel
-  agents/normalize.ts             cleans up whatever JSON the AI returns
-  tactile/convert.ts              FloorModel -> plate (the standards live here)
-  tactile/braille.ts              letters -> braille dot positions
-  tactile/geometry.ts             boxes, domes, rings -> triangles -> STL file
-  sample.ts                       the hand-made sample office
-  db/                             SQLite database (one "projects" table)
+apps/api/src/                     BACKEND (Bun + Hono, cổng 3003)
+  index.ts                        khởi động server
+  routes/projects.ts              mọi endpoint của API (bảng bên dưới)
+  agents/llm.ts                   gọi Gemini hoặc OpenRouter
+  agents/models.ts                các mô hình mà form tải lên được phép hiển thị, kèm giá
+  agents/parser.ts                agent đọc: ảnh -> FloorModel (prompt nằm ở đây)
+  agents/editor.ts                agent sửa: lệnh + FloorModel -> FloorModel
+  agents/normalize.ts             làm sạch JSON mà AI trả về
+  tactile/convert.ts              FloorModel -> tấm in (các chuẩn nằm ở đây)
+  tactile/braille.ts              chữ cái -> vị trí chấm braille
+  tactile/geometry.ts             khối hộp, vòm, vòng -> tam giác -> file STL
+  sample.ts                       văn phòng mẫu làm thủ công
+  db/                             cơ sở dữ liệu SQLite (một bảng "projects")
 
-apps/web/src/                     WEBPAGE (Next.js, port 3000)
-  app/page.tsx                    landing page
-  app/maps/page.tsx               upload + list of maps
-  app/projects/[id]/page.tsx      one map: editor and 3D view
+apps/web/src/                     TRANG WEB (Next.js, cổng 3000)
+  app/page.tsx                    trang chủ
+  app/maps/page.tsx               tải lên + danh sách bản đồ
+  app/projects/[id]/page.tsx      một bản đồ: trình chỉnh sửa và xem 3D
   app/the-need-for-this, what-it-does, how-it-works, input-guide, gallery
-                                  information pages (text in data/site-pages.ts)
-  components/layout/              site header (navigation) and footer
-  components/landing/             landing hero, info pages, input guide, gallery
-  components/editor/              the editing canvas, toolbar, side panels
-  components/preview/             3D viewer (three.js) and export panel
-  lib/api.ts                      every call the webpage makes to the backend
-  lib/floor-edit.ts               small functions that change a FloorModel
-  data/content.ts                 text for the map tool (Vietnamese)
-  data/site-pages.ts              text for the information pages (Vietnamese)
-public/gallery/                   example plans and STL plates made by bumps
+                                  các trang thông tin (nội dung trong data/site-pages.ts)
+  components/layout/              thanh điều hướng và chân trang
+  components/landing/             phần đầu trang chủ, trang thông tin, hướng dẫn đầu vào, thư viện
+  components/editor/              khung vẽ chỉnh sửa, thanh công cụ, các bảng bên
+  components/preview/             trình xem 3D (three.js) và bảng xuất file
+  lib/api.ts                      mọi lời gọi từ trang web đến backend
+  lib/floor-edit.ts               các hàm nhỏ để thay đổi FloorModel
+  data/content.ts                 nội dung chữ cho công cụ bản đồ (tiếng Việt)
+  data/site-pages.ts              nội dung chữ cho các trang thông tin (tiếng Việt)
+public/gallery/                   mặt bằng mẫu và tấm STL do bumps tạo ra
 ```
 
 ## API
 
-| Method | Path | What it does |
+| Phương thức | Đường dẫn | Chức năng |
 |---|---|---|
-| GET | `/models` | The models the upload form may offer |
-| GET | `/projects` | List all maps |
-| POST | `/projects` | Upload an image (form fields `file`, optional `name` and `model`) and start the parser agent |
-| POST | `/projects/sample` | Create a map from the built-in sample |
-| GET | `/projects/:id` | One map, including its FloorModel and status |
-| DELETE | `/projects/:id` | Delete a map |
-| GET | `/projects/:id/image` | The uploaded image |
-| POST | `/projects/:id/parse` | Run the parser agent again |
-| PUT | `/projects/:id/model` | Save an edited FloorModel |
-| POST | `/projects/:id/edit` | Edit agent: `{ "instruction": "..." }` |
-| GET | `/projects/:id/tactile` | Braille legend and warnings |
-| GET | `/projects/:id/map.stl` | The map plate (`?download=1` to save) |
-| GET | `/projects/:id/legend.stl` | The legend plate |
+| GET | `/models` | Các mô hình mà form tải lên được phép hiển thị |
+| GET | `/projects` | Liệt kê tất cả bản đồ |
+| POST | `/projects` | Tải lên ảnh (trường form `file`, tùy chọn `name` và `model`) và chạy agent đọc |
+| POST | `/projects/sample` | Tạo bản đồ từ mẫu có sẵn |
+| GET | `/projects/:id` | Một bản đồ, gồm FloorModel và trạng thái |
+| DELETE | `/projects/:id` | Xóa một bản đồ |
+| GET | `/projects/:id/image` | Ảnh đã tải lên |
+| POST | `/projects/:id/parse` | Chạy lại agent đọc |
+| PUT | `/projects/:id/model` | Lưu FloorModel đã chỉnh sửa |
+| POST | `/projects/:id/edit` | Agent sửa: `{ "instruction": "..." }` |
+| GET | `/projects/:id/tactile` | Chú giải braille và cảnh báo |
+| GET | `/projects/:id/map.stl` | Tấm bản đồ (thêm `?download=1` để tải về) |
+| GET | `/projects/:id/legend.stl` | Tấm chú giải |
 
-## Printing
+## In
 
-Print flat, 0.4 mm nozzle, no supports. Any common printer bed fits 200 × 200 mm.
+In nằm phẳng, đầu phun 0,4 mm, không cần giá đỡ. Bàn in của các máy in phổ thông đều vừa khổ 200 × 200 mm.
 
-## Checks
+## Kiểm tra
 
 ```bash
 bun run typecheck
 bun run lint
 ```
 
-## What was left out from bumps
+## Những gì đã lược bỏ so với bumps
 
-Kept simple on purpose. Ideas for extending the capstone:
+Cố ý giữ đơn giản. Một số ý tưởng để mở rộng capstone:
 
-- A **critique agent** that compares the FloorModel against the image and asks the parser to fix mistakes (bumps ran up to 5 rounds).
-- PDF uploads, furniture, walkways and roads.
-- Large buildings split across several plates.
-- Automatic repair of rule violations (for example moving a braille key that doesn't fit).
-- Google sign-in is already wired in `apps/web/src/auth.ts` but not used by any page yet.
+- Một **agent phản biện** so sánh FloorModel với ảnh gốc và yêu cầu agent đọc sửa lỗi (bumps chạy tối đa 5 vòng).
+- Tải lên file PDF, đồ nội thất, lối đi và đường sá.
+- Tòa nhà lớn được chia thành nhiều tấm in.
+- Tự động sửa các vi phạm quy tắc (ví dụ di chuyển một mã braille không vừa chỗ).
+- Đăng nhập Google đã được nối sẵn trong `apps/web/src/auth.ts` nhưng chưa trang nào dùng.
 
-## Deploy
+## Triển khai
 
-Both apps have a Dockerfile, built from the repo root. SQLite and uploads are files on disk, so the API host needs a persistent disk (`DATABASE_PATH`, `UPLOADS_DIR`).
+Cả hai ứng dụng đều có Dockerfile, build từ thư mục gốc của repo. SQLite và các file tải lên được lưu trên đĩa, nên máy chủ chạy API cần một ổ đĩa lưu trữ lâu dài (`DATABASE_PATH`, `UPLOADS_DIR`).

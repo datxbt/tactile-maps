@@ -2,7 +2,7 @@
 # NEXT_PUBLIC_API_URL is inlined at build time — pass the api's public URL:
 #   docker build -f apps/web/Dockerfile --build-arg NEXT_PUBLIC_API_URL=https://your-api.onrender.com .
 FROM node:22-bookworm-slim AS builder
-COPY --from=oven/bun:1.3 /usr/local/bin/bun /usr/local/bin/bun
+COPY --from=oven/bun:1.4.2 /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 COPY package.json bun.lock ./
 COPY apps/api/package.json apps/api/

@@ -1,5 +1,5 @@
 // Text for the informational pages (landing, about, guides, gallery).
-// Adapted from bumps-main and translated; kept true to what this app does.
+// Kept true to what this app does.
 
 export const navigationContent = {
   label: "Điều hướng chính",
@@ -43,16 +43,12 @@ export const landingContent = {
   },
 } as const;
 
-export const footerContent = {
-  text: "Dự án capstone · Phiên bản đơn giản hóa của bumps",
-} as const;
-
 export const infoPages = {
   theNeed: {
     title: "Nhu cầu",
     paragraphs: [
-      "Bước vào một tòa nhà lạ khi không nhìn thấy nghĩa là thiếu đi thứ mà mọi khách khác đều có sẵn: hình dung về bố cục. Người sáng mắt chỉ cần liếc bảng sơ đồ ở sảnh. Người khiếm thị phải hỏi đường, ghi nhớ lời chỉ dẫn, hoặc tự dò đường.",
-      "Bản đồ xúc giác lấp khoảng trống đó. Đọc một lần bằng đầu ngón tay ở lối vào, bạn mang theo cả bố cục: hành lang dẫn đi đâu, cầu thang và thang máy ở đâu, cửa nào là cửa cần tìm.",
+      "Bước vào một tòa nhà mới lạ khi bị khiếm thị nghĩa là thiếu đi thứ mà mọi người khác đều có: khả năng hình dung về bố cục. Người bình thường chỉ cần liếc qua bảng sơ đồ ở sảnh. Người khiếm thị phải hỏi đường, ghi nhớ lời chỉ dẫn, hoặc tự dò đường.",
+      "Bản đồ xúc giác sẽ giúp giải quyết khoảng trống đó. Đọc một lần bằng đầu ngón tay ở lối vào, bạn mang theo cả bố cục: hành lang dẫn đi đâu, cầu thang và thang máy ở đâu, cửa nào là cửa cần tìm.",
       "Thế nhưng gần như không tòa nhà nào có bản đồ như vậy, vì mỗi bản đồ xúc giác đều phải đặt làm riêng: chuyên gia nghiên cứu sơ đồ, thiết kế theo tiêu chuẩn xúc giác, sản xuất rồi giao hàng. Quá chậm và tốn kém nên rất ít nơi đặt làm.",
       "Máy in 3D thì đã có ở khắp nơi: trường học, thư viện, xưởng chế tạo. Thứ còn thiếu là bước thiết kế, và đó chính là phần dự án này tự động hóa.",
     ],
@@ -75,7 +71,7 @@ export const infoPages = {
       {
         title: "AI đọc sơ đồ",
         description:
-          "Tác tử AI nhận diện tường, cửa, phòng, cầu thang, thang máy, lối vào và nhà vệ sinh, kèm độ tin cậy cho từng phần tử.",
+          "Agent AI nhận diện tường, cửa, phòng, cầu thang, thang máy, lối vào và nhà vệ sinh, kèm độ tin cậy cho từng phần tử.",
       },
       {
         title: "Bạn xác nhận",
@@ -137,7 +133,7 @@ export type GalleryItem = {
 export const galleryContent = {
   title: "Thư viện mẫu",
   intro:
-    "Các ví dụ dưới đây được tạo bởi bumps, dự án gốc của ứng dụng này, với quy trình AI nhiều bước. Mỗi tấm có kích thước 200 × 200 mm.",
+    "Các ví dụ dưới đây được tạo từ sơ đồ mặt bằng mẫu. Mỗi tấm có kích thước 200 × 200 mm.",
   sourceLabel: "Sơ đồ tải lên",
   stlLabel: "Tấm in 3D",
   downloadLabel: "Tải STL",

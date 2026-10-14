@@ -2,8 +2,8 @@ import type { FloorModel } from '@capstone/shared'
 import { askModel, extractJson, type ImageInput } from './llm'
 import { normalizeModel } from './normalize'
 
-// Parser agent: floor-plan image -> FloorModel. Shortened from the bumps
-// parser prompt, keeping only the element types this app uses.
+// Parser agent: floor-plan image -> FloorModel, limited to the element
+// types this app uses.
 const PARSER_INSTRUCTION = `You are an expert architectural-drawing analyst. You extract structured geometry from ONE floor plan image. The result becomes a tactile (raised, 3D-printed) map for blind readers, so everything you miss is absent from their world and everything you invent misleads them.
 
 First judge the image. Set "suitability" to "good" or "usable" when it is a traceable top-down 2D floor plan, and "poor" for photos, 3D renders, perspective views or illegible drawings (return empty arrays then).

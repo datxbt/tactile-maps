@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { DM_Mono, Doto } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
-import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { siteContent } from "@/data/site";
 import { cn } from "@/lib/utils";
@@ -38,7 +37,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-svh flex-col">
         <SiteHeader />
         <div className="flex-1">{children}</div>
-        <SiteFooter />
       </body>
     </html>
   );

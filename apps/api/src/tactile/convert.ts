@@ -130,7 +130,7 @@ export function buildLegendPlate(legend: LegendEntry[]): Triangle[] {
   return triangles
 }
 
-// Standard symbols (see capstone-core/STANDARDS.md in bumps-main), 6 mm wide.
+// Standard tactile symbols, 6 mm wide.
 function symbol(kind: FeatureKind, at: Point2, z0: number): Triangle[] {
   const z1 = z0 + SYMBOL.height
   const half = SYMBOL.size / 2

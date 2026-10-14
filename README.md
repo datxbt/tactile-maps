@@ -2,8 +2,6 @@
 
 Tải lên ảnh mặt bằng tòa nhà và nhận về một **bản đồ xúc giác** có thể in 3D: tường nổi, ký hiệu theo chuẩn và chữ nổi braille để người khiếm thị hoặc thị lực kém có thể đọc bằng ngón tay trước khi đến tòa nhà.
 
-Đây là phiên bản rút gọn của dự án hackathon `bumps`. Nó giữ nguyên quy trình (tải lên, agent AI, chỉnh sửa, xem 3D, xuất STL) nhưng ít mã hơn rất nhiều.
-
 ## Chạy dự án
 
 Cần [Bun](https://bun.sh) 1.3 trở lên.
@@ -62,9 +60,9 @@ apps/api/src/                     BACKEND (Bun + Hono, cổng 3003)
   db/                             cơ sở dữ liệu SQLite (một bảng "projects")
 
 apps/web/src/                     TRANG WEB (Next.js, cổng 3000)
-  app/page.tsx                    trang chủ
-  app/maps/page.tsx               tải lên + danh sách bản đồ
-  app/projects/[id]/page.tsx      một bản đồ: trình chỉnh sửa và xem 3D
+  app/                    trang chủ
+  app/maps/               tải lên + danh sách bản đồ
+  app/projects/[id]/      một bản đồ: trình chỉnh sửa và xem 3D
   app/the-need-for-this, what-it-does, how-it-works, input-guide, gallery
                                   các trang thông tin (nội dung trong data/site-pages.ts)
   components/layout/              thanh điều hướng và chân trang
@@ -75,7 +73,7 @@ apps/web/src/                     TRANG WEB (Next.js, cổng 3000)
   lib/floor-edit.ts               các hàm nhỏ để thay đổi FloorModel
   data/content.ts                 nội dung chữ cho công cụ bản đồ (tiếng Việt)
   data/site-pages.ts              nội dung chữ cho các trang thông tin (tiếng Việt)
-public/gallery/                   mặt bằng mẫu và tấm STL do bumps tạo ra
+public/gallery/                   mặt bằng mẫu và tấm STL mẫu
 ```
 
 ## API
@@ -107,11 +105,11 @@ bun run typecheck
 bun run lint
 ```
 
-## Những gì đã lược bỏ so với bumps
+## Hướng mở rộng
 
 Cố ý giữ đơn giản. Một số ý tưởng để mở rộng capstone:
 
-- Một **agent phản biện** so sánh FloorModel với ảnh gốc và yêu cầu agent đọc sửa lỗi (bumps chạy tối đa 5 vòng).
+- Một **agent phản biện** so sánh FloorModel với ảnh gốc và yêu cầu agent đọc sửa lỗi.
 - Tải lên file PDF, đồ nội thất, lối đi và đường sá.
 - Tòa nhà lớn được chia thành nhiều tấm in.
 - Tự động sửa các vi phạm quy tắc (ví dụ di chuyển một mã braille không vừa chỗ).
